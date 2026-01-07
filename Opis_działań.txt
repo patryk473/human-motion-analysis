@@ -1,0 +1,14 @@
+1. Środowisko wirtualne
+python -m venv venv
+venv\Scripts\Activate.ps1
+
+2. Zainstalowane pakiety
+numpy → obliczenia wektorowe i macierze
+scipy → interpolacja, filtrowanie, detekcja pików
+matplotlib → wykresy, wizualizacja
+pandas → zapis/odczyt CSV, analiza danych
+opencv-python → przetwarzanie wideo i obrazów
+mediapipe → wykrywanie landmarków / analiza ruchu
+
+3. Konfiguracja VS Code
+Ctrl Shift P -> Select Interpreter -> venv
