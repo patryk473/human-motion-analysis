@@ -10,5 +10,55 @@ pandas → zapis/odczyt CSV, analiza danych
 opencv-python → przetwarzanie wideo i obrazów
 mediapipe → wykrywanie landmarków / analiza ruchu
 
-3. Konfiguracja VS Code
+3a. Konfiguracja VS Code
 Ctrl Shift P -> Select Interpreter -> venv
+
+3b. Konfifuracja python
+By mediapipe działał potrzebny był Python 3.10.11, bo 3.12 + nie wspiera
+
+4. Ogarnięćie podstaw działania 
+
+5. Podział repo (docelowy)
+
+human-motion-analysis/
+│
+├── data/
+│   ├── raw/
+│   │   └── knee_flexion_01.mp4
+│   ├── processed/
+│   │   └── knee_flexion_01_annotated.mp4
+│   └── results/
+│       └── knee_angles_01.csv
+│
+├── plots/
+│   └── knee_flexion_01.png
+│
+├── src/
+│   ├── __init__.py
+│   │
+│   ├── main/
+│   │   └── knee_angle.py          # ← główny plik (pipeline)
+│   │
+│   ├── config/
+│   │   ├── mediapipe_config.py    # ← konfiguracja Pose
+│   │   └── paths.py               # ← ścieżki projektu
+│   │
+│   ├── pose/
+│   │   ├── angle_utils.py         # ← liczenie kątów
+│   │   ├── filters.py             # ← wygładzanie
+│   │   └── drawing.py             # ← rysowanie punktów
+│   │
+│   ├── io/
+│   │   ├── video_reader.py        # ← wczytywanie wideo
+│   │   ├── video_writer.py        # ← zapis wideo
+│   │   └── csv_writer.py          # ← zapisy wyników
+│   │
+│   └── tasks/
+│       └── knee_flexion.task      # ← definicja eksperymentu
+│
+├── requirements.txt
+└── README.md
+
+6. Utworzenie plików
+angle_utils <- z kodem do liczenia kąta z punktów
+mediapie_config <- konfiguracja mediapipe

@@ -1,0 +1,1 @@
+from .mediapipe_config import create_pose_landmarker
