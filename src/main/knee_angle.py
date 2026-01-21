@@ -1,26 +1,25 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-# import time
 
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision #zadania wizji komputerowej
-from mediapipe.tasks.python.vision import RunningMode
-
-from src.pose import angle_3_points
 from src.config import create_pose_landmarker
+from src.pose import draw_points, draw_connections, knee_flexion_angle
+from src.io import MovingAverage
 
-pose_landmarker = create_pose_landmarker()
-
-# "kości"
 POSE_CONNECTIONS = [
     (23, 25), (25, 27),   # lewa noga
-    # (24, 26), (26, 28),   # prawa noga
-    # (23, 24),             # biodra
 ]
 
 cap = cv2.VideoCapture("data/raw/knee_flexion_01.mp4")
 fps = cap.get(cv2.CAP_PROP_FPS)
+
+pose_landmarker = create_pose_landmarker()
+
+
+#dane do wykresu
+angles_raw = []
+angles_smooth = []
+times = []
 
 frame_counter = 0
 try:
@@ -48,46 +47,23 @@ try:
 
 
         if result.pose_landmarks: 
-            # rysowanie punktów
             h, w, _ = frame.shape
+            landmarks = result.pose_landmarks[0]
 
-            for start_idx, end_idx in POSE_CONNECTIONS:
-                p1 = result.pose_landmarks[0][start_idx]
-                p2 = result.pose_landmarks[0][end_idx]
+            draw_connections(frame, landmarks, POSE_CONNECTIONS, w, h)
+            draw_points(frame, landmarks, [23, 25, 27], w, h)
+            
+            angle = knee_flexion_angle(landmarks, w, h, side="left")
 
-                x1, y1 = int(p1.x * w), int(p1.y * h)
-                x2, y2 = int(p2.x * w), int(p2.y * h)
 
-                cv2.line(frame, (x1,y1), (x2,y2), (255, 0, 0), 2)
+            t = frame_counter / fps
 
-            # result.pose_landmark to:
-            # lista POZ (osób) -> każda pozycja = lista punktów ciała
-            # Iteracja po 33 punktach osoby
-            # result.pose_landmarks[0][i] <- i-ty punkt osoby
-            for idx in [23, 25, 27, 29, 31]:
-                # mnożymy przez szerokość i wysokość obrazu
-                # x, y to nowy obszar
-                landmark = result.pose_landmarks[0][idx]
-                x = int(landmark.x * w)
-                y = int(landmark.y * h)
-
-                #rysujemy zielony punkty
-                cv2.circle(frame, (x,y), 4, (0, 255, 0), -1)
-
-            biodro = result.pose_landmarks[0][23]
-            kolano = result.pose_landmarks[0][25]
-            kostka = result.pose_landmarks[0][27]
-
-            A = np.array([biodro.x * w, biodro.y * h])
-            B = np.array([kolano.x * w, kolano.y * h])
-            C = np.array([kostka.x * w, kostka.y * h])
-
-            angle = angle_3_points(A,B,C) #w stopniach
 
             cv2.putText(
                 frame,
                 f"{angle:.1f}",
-                (int(B[0] +10), int(B[1])),
+                #(int(B[0] +10), int(B[1])),
+                (30, 40),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.6,
                 (0, 255, 255),
@@ -99,6 +75,8 @@ try:
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q') or key == 27:
             break
+
+    
 
 finally:
     print("Zamykanie programu...")

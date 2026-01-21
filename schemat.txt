@@ -1,0 +1,35 @@
+data/
+├── processed/
+├──raw/
+│   └── knee_flexion_01.mp4             //Nagranie video
+├── result/
+│   └── knee_flexion.csv                //Dane po analizie
+models/
+├── mediapipe/
+│   ├── hand_landmarker.task            //Model do ręki
+│   └── pose_landmarker.task            //Model do całego ciała
+plots/
+├── knee_flexion_01_plot.png            //Wykres 1
+└── knee_flexion_01_plot(1).png         //Wykres 2
+src/
+├── config/
+│   ├── __init__.py
+│   ├── mediapipe_config.py             //Konfiguracja mediapipe
+│   └── paths.py                        //Ścieżka do modelu
+├── io/
+│   ├── __init__.py
+│   ├── plotting.py                     //Tworzenie wykresu
+│   ├── scv_writer.py                   //Zapis do pliku csv
+│   ├── signal.py                       //klasa MovingAverage, wygładza kąt
+│   ├── video_reader.py                 //Nieużywane
+│   └── video_writer.py                 //Nieużywane
+├── main/
+│   ├── __init__.py
+│   ├── knee_angle.py                   //Stary główny plik do obliczania kąta (niedługo do usunięcia)
+│   └── video_analysis.py               //Funkcja do analizy video
+├── pose/
+│   ├── __init__.py
+│   ├── angle_utils.py                  //Obliczanie kąta
+│   ├── drawing.py                      //Rysowanie na video
+│   └── filters.py                      //Nieużywane
+main.py
