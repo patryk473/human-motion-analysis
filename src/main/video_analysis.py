@@ -3,23 +3,31 @@ import mediapipe as mp
 import numpy as np
 
 from src.config import create_pose_landmarker
-from src.pose import draw_points, draw_connections, knee_flexion_angle
-from src.io import MovingAverage
+from src.pose import draw_points, draw_connections, knee_flexion_angle, torso_tilt_angle, hip_angle
+from src.io import MovingAverage, draw_angles
 
 POSE_CONNECTIONS = [
     (23, 25), (25, 27),   # lewa noga
+    (11, 23)              # plecy
 ]
 
 def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     
-    cap = cv2.VideoCapture("data/raw/knee_flexion_01.mp4")
+    cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
 
     pose_landmarker = create_pose_landmarker()  
-    ma_filter = MovingAverage(window=smooth_window)
+    filters = {
+        "knee" : MovingAverage(window=smooth_window),
+        "hip" : MovingAverage(window=smooth_window),
+        "trunk" : MovingAverage(window=smooth_window),
+    } 
 
-    angles_raw = []
-    angles_smooth = []
+    angles = {
+        "knee": {"raw": [],"smooth": []},
+        "hip": {"raw": [],"smooth": []},
+        "trunk": {"raw": [],"smooth": []},
+    }
     times = []
 
     frame_counter = 0
@@ -45,29 +53,33 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
             h, w, _ = frame.shape
             landmarks = result.pose_landmarks[0]
 
-            angle = knee_flexion_angle(landmarks, w, h, side=side)
-            angle_smoothed = ma_filter.update(angle)
+            angle_knee = knee_flexion_angle(landmarks, w, h, side=side)
+            angle_knee_smoothed = filters["knee"].update(angle_knee)
+
+            angles["knee"]["raw"].append(angle_knee)
+            angles["knee"]["smooth"].append(angle_knee_smoothed)
+
+            angle_hip = hip_angle(landmarks, w, h, side=side)
+            angle_hip_smoothed = filters["hip"].update(angle_hip)
+            
+            angles["hip"]["raw"].append(angle_hip)
+            angles["hip"]["smooth"].append(angle_hip_smoothed)
+
+            angle_trunk = torso_tilt_angle(landmarks, w, h, side=side)
+            angle_trunk_smoothed = filters["trunk"].update(angle_trunk)
+
+            angles["trunk"]["raw"].append(angle_trunk)
+            angles["trunk"]["smooth"].append(angle_trunk_smoothed)
 
             t = frame_counter / fps
             times.append(t)
-            angles_raw.append(angle)
-            angles_smooth.append(angle_smoothed)
-            
+
             if show_video:
                 draw_connections(frame, landmarks, POSE_CONNECTIONS, w, h)
-                draw_points(frame, landmarks, [23, 25, 27], w, h)
-                
-                cv2.putText(
-                    frame,
-                    f"{angle_smoothed:.1f}",
-                    (30, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6,
-                    (0, 255, 255),
-                    2
-                )
-
+                draw_points(frame, landmarks, [11, 23, 25, 27], w, h)
+                draw_angles(frame, angles)
                 cv2.imshow("Pose analysis", frame)
+
 
         if show_video:
             if cv2.waitKey(1) & 0xFF in [27, ord("q")]:
@@ -77,4 +89,4 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     cap.release()
     cv2.destroyAllWindows()
 
-    return times, angles_raw, angles_smooth
+    return times, angles
