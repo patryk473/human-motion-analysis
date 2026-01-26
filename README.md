@@ -12,7 +12,9 @@ Rozszerzenie:
 (mogę wyciągnąć przysiad z serii i zapisać osobno do analizy jako jeden i tak każdy)
 -> liczymy dodatkowo czas zejścia i wstawania
 
+
 Jakość ruchu:
+-> Wyświetlanie wszystkich danych na filmiku, czas zejścia, wstawania też, i od razu w kolorach czerwony/zielony feedback na filmiku
 -> Komputer sprawdza na podstawie zdefiniowanych progów czy jest dobrze czy źle
 -> Porównuje każdy przysiad z serii do wzoru
 

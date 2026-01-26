@@ -3,18 +3,29 @@ import mediapipe as mp
 import numpy as np
 
 from src.config import create_pose_landmarker
-from src.pose import draw_points, draw_connections, knee_flexion_angle, torso_tilt_angle, hip_angle
+from src.pose import draw_points, draw_connections, knee_flexion_angle, torso_tilt_angle, hip_angle, SquatDetector
 from src.io import MovingAverage, draw_angles
 
-POSE_CONNECTIONS = [
-    (23, 25), (25, 27),   # lewa noga
-    (11, 23)              # plecy
-]
+POSE_CONNECTIONS = {
+    "left": [(23, 25), (25, 27), (11, 23)],
+    "right": [(24, 26), (26, 28), (12, 24)]
+}
 
 def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
+
+    detector = SquatDetector(fps)
+    frame_squat_ids = []
+    
+    success, frame = cap.read()
+    if not success:
+        raise RuntimeError("Nie można odczytać wideo")
+    
+    h, w, _ = frame.shape
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    writer = cv2.VideoWriter("data/processed/output.mp4",fourcc, fps, (w, h))
 
     pose_landmarker = create_pose_landmarker()  
     filters = {
@@ -53,8 +64,16 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
             h, w, _ = frame.shape
             landmarks = result.pose_landmarks[0]
 
+            t = frame_counter / fps
+            times.append(t)
+
             angle_knee = knee_flexion_angle(landmarks, w, h, side=side)
             angle_knee_smoothed = filters["knee"].update(angle_knee)
+
+            angle = angle_knee_smoothed
+            detector.update(angle, t)
+            current_id = detector.active_squat_id
+            frame_squat_ids.append(current_id)
 
             angles["knee"]["raw"].append(angle_knee)
             angles["knee"]["smooth"].append(angle_knee_smoothed)
@@ -71,22 +90,21 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
             angles["trunk"]["raw"].append(angle_trunk)
             angles["trunk"]["smooth"].append(angle_trunk_smoothed)
 
-            t = frame_counter / fps
-            times.append(t)
-
             if show_video:
-                draw_connections(frame, landmarks, POSE_CONNECTIONS, w, h)
+                draw_connections(frame, landmarks, POSE_CONNECTIONS[side], w, h)
                 draw_points(frame, landmarks, [11, 23, 25, 27], w, h)
                 draw_angles(frame, angles)
                 cv2.imshow("Pose analysis", frame)
-
+            
+            writer.write(frame)
 
         if show_video:
             if cv2.waitKey(1) & 0xFF in [27, ord("q")]:
                 break
 
-
+    writer.release()
     cap.release()
     cv2.destroyAllWindows()
 
-    return times, angles
+    squat_times = detector.compute_times()
+    return times, angles, squat_times, frame_squat_ids
