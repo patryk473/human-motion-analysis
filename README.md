@@ -15,8 +15,11 @@ Rozszerzenie:
 
 Jakość ruchu:
 -> Wyświetlanie wszystkich danych na filmiku, czas zejścia, wstawania też, i od razu w kolorach czerwony/zielony feedback na filmiku
--> Komputer sprawdza na podstawie zdefiniowanych progów czy jest dobrze czy źle
--> Porównuje każdy przysiad z serii do wzoru
+-> Komputer sprawdza na podstawie zdefiniowanych progów czy jest dobrze czy źle I DAJE FEEDBACK NA ŻYWO
+-> Porównuje każdy przysiad z serii do wzoru I DAJE FEEDBACK NA KONIEC
+
+Rozszerzenie jakości:
+-> Więcej danych odnośnie jakości
 
 POTEM
 Rozszerzenie o czujniki:

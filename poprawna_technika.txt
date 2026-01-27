@@ -1,0 +1,24 @@
+Z boku (2D sagittal):
+✅ kąt kolana
+✅ kąt biodra
+✅ pochylenie tułowia
+✅ tor biodra / środka masy
+✅ głębokość przysiadu
+✅ prędkość i przyspieszenie ruchu
+✅ tempo + fazy ruchu
+
+Z IMU:
+✅ prędkość kątowa (kontrola ekscentryki/koncentryki)
+✅ stabilność (mikrodrgania, „szarpanie”)
+✅ wykrycie odbicia/bounce
+✅ timing biodro vs kolano
+✅ symetria między powtórzeniami
+
+kolano
+Faza	Wartość
+stojąc	170–180°
+półprzysiad	110–130°
+równoległy	~90–100°
+pełny	60–80°
+
+biodro

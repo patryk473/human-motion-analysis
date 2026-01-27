@@ -15,7 +15,7 @@ def plot_knee_angle(times, raw, smooth, title, save_path):
     plt.grid(True)
 
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
-    plt.show()
+    plt.close()
 
 def plot_three_angles(times, angles, title, save_path):
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -43,4 +43,4 @@ def plot_three_angles(times, angles, title, save_path):
     fig.suptitle(title, fontsize=14)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
-    plt.show()
+    plt.close()
