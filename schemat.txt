@@ -1,35 +1,77 @@
-data/
-├── processed/
-├──raw/
-│   └── knee_flexion_01.mp4             //Nagranie video
-├── result/
-│   └── knee_flexion.csv                //Dane po analizie
-models/
-├── mediapipe/
-│   ├── hand_landmarker.task            //Model do ręki
-│   └── pose_landmarker.task            //Model do całego ciała
-plots/
-├── knee_flexion_01_plot.png            //Wykres 1
-└── knee_flexion_01_plot(1).png         //Wykres 2
-src/
-├── config/
-│   ├── __init__.py
-│   ├── mediapipe_config.py             //Konfiguracja mediapipe
-│   └── paths.py                        //Ścieżka do modelu
-├── io/
-│   ├── __init__.py
-│   ├── plotting.py                     //Tworzenie wykresu
-│   ├── scv_writer.py                   //Zapis do pliku csv
-│   ├── signal.py                       //klasa MovingAverage, wygładza kąt
-│   ├── video_reader.py                 //Nieużywane
-│   └── video_writer.py                 //Nieużywane
-├── main/
-│   ├── __init__.py
-│   ├── knee_angle.py                   //Stary główny plik do obliczania kąta (niedługo do usunięcia)
-│   └── video_analysis.py               //Funkcja do analizy video
-├── pose/
-│   ├── __init__.py
-│   ├── angle_utils.py                  //Obliczanie kąta
-│   ├── drawing.py                      //Rysowanie na video
-│   └── filters.py                      //Nieużywane
-main.py
+human-motion-analysis/
+│
+├── firmware/                              # Kod na ESP32 (Arduino)
+│   └── esp32_imu_http/
+│       ├── esp32_imu_http.ino             # Główny plik Arduino (setup/loop, WiFi, HTTP)
+│       ├── imu_sensor.h                   # Obsługa IMU (LSM6DS3TR-C) – deklaracje
+│       ├── imu_sensor.cpp                 # Obsługa IMU – implementacja
+│       ├── api_handlers.h                 # Endpointy HTTP – deklaracje
+│       └── api_handlers.cpp               # Endpointy HTTP – implementacja
+│
+├── live/                                  # Frontend do podglądu LIVE (HTML/JS)
+│   ├── imu.html                           # Live podgląd danych IMU
+│   ├── squat_live.html                    # (opcjonalnie) live analiza przysiadu
+│   ├── js/
+│   │   └── imu_client.js                  # fetch(), WebSocket (w przyszłości)
+│   └── css/
+│       └── style.css                      # Style do HTML
+│
+├── data/                                  # Dane wejściowe i wyjściowe
+│   ├── raw/
+│   │   └── squat_02.mp4                   # Surowe nagranie wideo
+│   ├── processed/
+│   │   └── output.mp4                     # Wideo po analizie
+│   └── result/
+│       ├── dane.xlsx                      # Dane zbiorcze (Excel)
+│       ├── squat_02.csv                   # Dane ogólne przysiadu
+│       ├── squat_02_table.csv             # Dane tabelaryczne
+│       ├── squat_02_squats.csv            # Dane dla pojedynczych przysiadów
+│       └── squat_report_02.txt            # Raport tekstowy z analizy
+│
+├── models/                                # Modele ML / CV
+│   └── mediapipe/
+│       ├── pose_landmarker.task           # Model do całego ciała
+│       └── hand_landmarker.task           # Model do dłoni
+│
+├── plots/                                 # Wygenerowane wykresy
+│   └── squat_02_plot.png                  # Wykres kątów / faz przysiadu
+│
+├── src/                                   # Logika Pythona
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── mediapipe_config.py            # Konfiguracja MediaPipe
+│   │   └── paths.py                       # Ścieżki do modeli / danych
+│   │
+│   ├── io/
+│   │   ├── __init__.py
+│   │   ├── imu_client.py                  # Pobieranie danych IMU z ESP32 (HTTP)
+│   │   ├── draw_angles.py                 # Rysowanie kątów na wideo
+│   │   ├── draw_reports.py                # Rysowanie feedbacku na wideo
+│   │   ├── plotting.py                    # Generowanie wykresów
+│   │   ├── reports.py                     # Generowanie raportów tekstowych
+│   │   ├── csv_writer.py                  # Zapis danych do CSV
+│   │   └── signal.py                      # MovingAverage / filtrowanie sygnałów
+│   │
+│   ├── main/
+│   │   ├── __init__.py
+│   │   ├── video_analysis.py              # Analiza OFFLINE (wideo)
+│   │   └── live_analysis.py               # Analiza LIVE (IMU / kamera)
+│   │
+│   ├── pose/
+│   │   ├── __init__.py
+│   │   ├── angle_utils.py                 # Obliczanie kątów
+│   │   ├── drawing.py                     # Rysowanie szkieletu
+│   │   ├── feedback.py                    # Logika feedbacku
+│   │   ├── squat_detector.py              # Wykrywanie przysiadu
+│   │   └── squat_evaluator.py             # Ocena jakości przysiadu
+│
+├── venv/                                  # Wirtualne środowisko Python
+│
+│
+├── main.py                                # Punkt startowy projektu (CLI)
+│
+├── Opis_działań.txt                       # Historia tworzenia projektu
+├── Poprawna_technika.txt                  # Opinie ChatGPT o poprawnej technice
+├── SChemat.txt                            # Plik ze schematem (ten plik)
+│
+└── README.md                              # Opis projektu
