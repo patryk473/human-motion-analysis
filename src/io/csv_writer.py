@@ -15,3 +15,23 @@ def save_angles_csv(times, angles, path):
     })
 
     df.to_csv(path, index=False)
+
+def save_squat_frames_csv(squats, output_path):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    rows = []
+
+    for squat in squats:
+        for frame in squat["frames"]:
+            rows.append({
+                "time": frame["time"],
+                "squat_id": frame["squat_id"],
+                "phase": frame["phase"],
+                "phase_percent": frame.get("phase_percent"),
+                "knee": frame["knee"],
+                "trunk": frame["trunk"],
+            })
+
+    df = pd.DataFrame(rows)
+    df.to_csv(output_path, index=False)
+    return df

@@ -1,8 +1,8 @@
 from src.main import analyze_video
-from src.io import save_angles_csv, plot_three_angles, save_angles_table, save_squat_times_table, save_squat_report
+from src.io import save_angles_csv, plot_three_angles, save_squat_times_table, save_squat_report, save_squat_frames_csv
 from src.pose import SquatEvaluator
 
-times, angles, squats, squat_times, frame_squat_ids = analyze_video("data/raw/squat_02.mp4")
+times, angles, squats, squat_times = analyze_video("data/raw/squat_02.mp4")
 
 plot_three_angles(times, angles,
                 "Squat 02",
@@ -11,8 +11,10 @@ plot_three_angles(times, angles,
 save_angles_csv(times, angles,
                 "data/results/squat_02.csv")
 
-save_angles_table(times, angles, frame_squat_ids,
-                  "data/results/squat_02_table.csv")
+# 4️⃣ CSV – FRAME-LEVEL (NAJWAŻNIEJSZE, POD IMU)
+save_squat_frames_csv(squats,
+        "data/results/squat_02_frames.csv"
+    )
 
 save_squat_times_table(squat_times, 
                        "data/results/squat_02_squats.csv")

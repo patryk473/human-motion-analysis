@@ -10,7 +10,7 @@ human-motion-analysis/
 │
 ├── live/                                  # Frontend do podglądu LIVE (HTML/JS)
 │   ├── imu.html                           # Live podgląd danych IMU
-│   ├── squat_live.html                    # (opcjonalnie) live analiza przysiadu
+│   ├── squat_live.html                    # live analiza przysiadu  <- na razie puste
 │   ├── js/
 │   │   └── imu_client.js                  # fetch(), WebSocket (w przyszłości)
 │   └── css/
@@ -21,7 +21,9 @@ human-motion-analysis/
 │   │   └── squat_02.mp4                   # Surowe nagranie wideo
 │   ├── processed/
 │   │   └── output.mp4                     # Wideo po analizie
-│   └── result/
+│   ├── result/
+│   │   └── imu_session.csv                #  Zapisane dane z IMU
+│   └── results/
 │       ├── dane.xlsx                      # Dane zbiorcze (Excel)
 │       ├── squat_02.csv                   # Dane ogólne przysiadu
 │       ├── squat_02_table.csv             # Dane tabelaryczne
@@ -50,12 +52,12 @@ human-motion-analysis/
 │   │   ├── plotting.py                    # Generowanie wykresów
 │   │   ├── reports.py                     # Generowanie raportów tekstowych
 │   │   ├── csv_writer.py                  # Zapis danych do CSV
-│   │   └── signal.py                      # MovingAverage / filtrowanie sygnałów
+│   │   └── filters.py                     # MovingAverage / filtrowanie sygnałów
 │   │
 │   ├── main/
 │   │   ├── __init__.py
 │   │   ├── video_analysis.py              # Analiza OFFLINE (wideo)
-│   │   └── live_analysis.py               # Analiza LIVE (IMU / kamera)
+│   │   └── live_analysis.py               # Analiza LIVE (IMU / kamera) <- na razie puste
 │   │
 │   ├── pose/
 │   │   ├── __init__.py

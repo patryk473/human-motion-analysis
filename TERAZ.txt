@@ -1,0 +1,159 @@
+CHECKLIST
+---------------------
+(wykonano) Ustabilizować i domknąć analizę video by potem można było ją połączyć z analizą czujników
+1.  Doprecyzować i zapisać fazy przysiadu (START, DESCENT, BOTTOM, ASCENT, END)     <- logika ruchu / video 
+2.  Ujednolicić detekcję przysiadu (kamera = źródło prawdy)                         <- architektura systemu
+3.  Dodać normalizację czasową każdego przysiadu (0–100%)                           <- analiza sygnałów / video
+
+(pt) Ustalić jasne kryteria jakości 
+4.  Zdefiniować jeden liczbowy „score jakości” przysiadu                            <- metryki jakości 
+
+(pon) Uporządkować dane i sposób ich zapisu
+5.  Uporządkować strukturę danych jednego przysiadu (kąty + fazy + czasy)           <- struktura danych
+
+(wt / śrd) Przygotować software do analiczy z czujników
+6.  Dodać kalibrację IMU (offsety, orientacja osi)                                  <- czujniki
+7.  Dodać filtrację sygnałów IMU (low-pass / moving average)                        <- przetwarzanie sygnałów
+8.  Wyliczyć cechy z IMU (RMS, variance, piki gyro)                                 <- analiza sygnałów
+
+(czw) Zebranie nowych danych do analizy
+9.  Nagranie filmu do analizy z użyciem czujników                                   <- pomiar danych
+
+(pon) Połączenie informacji z kamery i czujników
+10. Zsynchronizować czasowo IMU z wideo                                             <- integracja systemów
+11. Przypisać dane IMU do faz przysiadu                                             <- analiza danych z czujnika pod kątem danych z video
+
+(wt / śrd) Rozszerzenie oceny jakości o dane z IMU
+12. Dodać metryki jakości z IMU (stabilność, drgania)                               <- metryki jakości, ocena stabilności i jakości
+13. Połączyć ocenę jakości: kamera + IMU                                            <- połączenie danych
+
+^^^ stabilna wersja OFFLINE
+
+(marzec) Dodać tryb LIVE
+14. Uprościć i dopiero wtedy uruchomić tryb LIVE                                    <- tryb live
+15. Ponowne pomiary w trybie LIVE                                                   <- pomiar danych
+
+Zakończenie
+15. Przygotować pipeline + diagram do opisu pracy                                   <- podsumowanie, dokumentacja
+---------------------
+
+🟢 ETAP 1 – DOMKNIĘCIE ANALIZY WIDEO (MUST)
+Masz 80–85% gotowe. Teraz trzeba to domknąć naukowo.
+
+1.1. Jawna definicja faz przysiadu
+Teraz:
+masz początek/koniec ✔️
+masz czas zejścia/wstawania ✔️
+Do zrobienia:
+formalnie wydziel:
+START
+DESCENT
+BOTTOM
+ASCENT
+END
+
+📌 Technicznie:
+na podstawie:
+znaku pochodnej kąta kolana
+progu minimalnego kąta
+➡️ To jest ważne, bo IMU będziesz mapował do faz.
+
+1.2. Normalizacja czasowa przysiadów
+Teraz każdy przysiad ma inną długość → trudno porównywać.
+Do zrobienia:
+przemapuj każdy przysiad do skali 0–100%
+interpolacja kątów
+
+Efekt:
+możesz powiedzieć:
+„w 60% ruchu tułów był za bardzo pochylony”
+➡️ To jest akademicko bardzo mocne.
+
+1.3. Jeden spójny „score jakości” przysiadu
+Teraz:
+masz feedback tekstowy
+masz progi
+Do zrobienia:
+zdefiniuj 1 liczbowy score, np. 0–100
+składniki:
+zakres ruchu (ROM)
+stabilność kątów
+symetria faz (czas dół vs góra)
+tułów
+
+📌 Nawet prosta suma ważona = OK
+➡️ To się świetnie broni na obronie.
+
+🟡 ETAP 2 – PRZYGOTOWANIE IMU (BEZ JESZCZE ŁĄCZENIA)
+Cel: IMU musi być „czyste” zanim je połączysz z wideo.
+
+2.1. Kalibracja czujników (MUST)
+Zanim cokolwiek:
+offsety żyroskopu
+orientacja osi (UDO vs łydka)
+Do zrobienia:
+3 sekundy stania nieruchomo → zapis offsetów
+zapisz do CSV info o kalibracji
+
+2.2. Filtracja IMU (MUST)
+Masz filters.py → super.
+Dodaj:
+low-pass na accel
+ewentualnie prosty complementary filter
+Nie idź jeszcze w Madgwicka.
+➡️ Projektowo: prostota > fancy algorytmy
+
+2.3. Cechy IMU (feature extraction)
+Nie surowe AX/GX, tylko:
+RMS przyspieszeń
+peak gyro
+variance w fazach
+📌 To nie jest ML, to klasyczna analiza sygnałów – bardzo OK akademicko.
+
+🔵 ETAP 3 – SYNCHRONIZACJA WIDEO ↔ IMU (KLUCZOWY)
+To jest najważniejszy moment projektu.
+
+3.1. Synchronizacja czasowa
+Opcje (od najlepszej):
+wspólny timestamp (kamera + ESP start razem)
+marker ruchowy (np. pierwsze ugięcie kolana)
+ręczny offset
+➡️ Wystarczy, że zsynchronizujesz początek przysiadu.
+
+3.2. Przypisanie IMU do faz ruchu
+Dla każdego przysiadu:
+masz zakres klatek (kamera)
+mapujesz IMU → DESCENT / BOTTOM / ASCENT
+Efekt:
+możesz powiedzieć:
+„w fazie ASCENT występowały drgania łydki”
+🔥 To jest konkretna wartość naukowa.
+
+🟣 ETAP 4 – NOWA JAKOŚĆ DZIĘKI IMU
+
+Tu IMU robi różnicę, a nie jest tylko dodatkiem.
+
+4.1. Stabilność kolana / łydki
+Z IMU:
+variance przyspieszeń bocznych
+nagłe piki gyro
+➡️ Wykrywanie:
+„kolano ucieka”
+„niestabilne wstawanie”
+
+4.2. Spójność ruchu (kamera vs IMU)
+Porównuj:
+zmiany kąta kolana (kamera)
+zmiany prędkości kątowej (IMU)
+Jeśli się rozjeżdżają:
+➡️ możliwa kompensacja tułowiem lub oszukiwanie ruchu
+🔥 Bardzo mocny punkt do opisu w pracy.
+
+🟠 ETAP 5 – LIVE (na sam koniec)
+Nie rób live wcześniej.
+Dlaczego?
+live = tylko UI
+wartość naukowa jest OFFLINE
+Live:
+tylko uproszczony feedback
+bez pełnej analizy

@@ -18,8 +18,8 @@ class SquatEvaluator:
             errors.append("Zbyt duże pochylenie tułowia")
 
         # 3️⃣ Tempo
-        descent = squat["bottom_frame"] - squat["start_frame"]
-        ascent  = squat["end_frame"] - squat["bottom_frame"]
+        descent = squat["bottom_time"] - squat["start_time"]
+        ascent  = squat["end_time"] - squat["bottom_time"]
 
         ratio = descent / ascent if ascent > 0 else None
         if ratio is None or not self.TEMPO_RANGE[0] <= ratio <= self.TEMPO_RANGE[1]:

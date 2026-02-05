@@ -65,7 +65,7 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
             h, w, _ = frame.shape
             landmarks = result.pose_landmarks[0]
 
-            t = frame_counter / fps
+            t = timestamp_ms / 1000.0
             times.append(t)
 
             angle_knee = knee_flexion_angle(landmarks, w, h, side=side)
@@ -93,7 +93,11 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
             )
 
             detector.update(angle_knee_smoothed, angle_trunk_smoothed, t)
-            current_id = detector.active_squat_id
+            if detector.current_squat:
+                current_id = detector.current_squat["squat_id"]
+            else:
+                current_id = None
+
             frame_squat_ids.append(current_id)
 
             if show_video:
@@ -113,6 +117,7 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     cap.release()
     cv2.destroyAllWindows()
 
+    detector.normalize_squat_time()
     squats = detector.get_squats()
     squat_times = detector.compute_times()
-    return times, angles, squats, squat_times, frame_squat_ids
+    return times, angles, squats, squat_times

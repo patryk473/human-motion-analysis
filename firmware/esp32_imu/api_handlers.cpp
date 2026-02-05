@@ -24,16 +24,32 @@ void setupApi(WebServer &server) {
 
   // GET /data
   server.on("/data", HTTP_GET, [&]() {
-    float ax, ay, az, gx, gy, gz;
-    imuRead(ax, ay, az, gx, gy, gz);
+    float ax0, ay0, az0, gx0, gy0, gz0;
+    float ax1, ay1, az1, gx1, gy1, gz1;
+
+    imuRead(0, ax0, ay0, az0, gx0, gy0, gz0);
+    imuRead(1, ax1, ay1, az1, gx1, gy1, gz1);
 
     String json = "{";
-    json += "\"ax\":" + String(ax, 3) + ",";
-    json += "\"ay\":" + String(ay, 3) + ",";
-    json += "\"az\":" + String(az, 3) + ",";
-    json += "\"gx\":" + String(gx, 3) + ",";
-    json += "\"gy\":" + String(gy, 3) + ",";
-    json += "\"gz\":" + String(gz, 3) + ",";
+
+    json += "\"imu0\":{";
+    json += "\"ax\":" + String(ax0,3) + ",";
+    json += "\"ay\":" + String(ay0,3) + ",";
+    json += "\"az\":" + String(az0,3) + ",";
+    json += "\"gx\":" + String(gx0,3) + ",";
+    json += "\"gy\":" + String(gy0,3) + ",";
+    json += "\"gz\":" + String(gz0,3);
+    json += "},";
+
+    json += "\"imu1\":{";
+    json += "\"ax\":" + String(ax1,3) + ",";
+    json += "\"ay\":" + String(ay1,3) + ",";
+    json += "\"az\":" + String(az1,3) + ",";
+    json += "\"gx\":" + String(gx1,3) + ",";
+    json += "\"gy\":" + String(gy1,3) + ",";
+    json += "\"gz\":" + String(gz1,3);
+    json += "},";
+
     json += "\"ts\":" + String(millis());
     json += "}";
 

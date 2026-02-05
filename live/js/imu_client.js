@@ -30,21 +30,44 @@ async function fetchIMU() {
 
     //Last sample do podglądu Live
     document.getElementById("out").textContent =
-      `AX: ${lastSample.ax}\nAY: ${lastSample.ay}\nAZ: ${lastSample.az}\n\n` +
-      `GX: ${lastSample.gx}\nGY: ${lastSample.gy}\nGZ: ${lastSample.gz}\n\n` +
-      `TS: ${lastSample.ts}`;
+    `IMU 0 (UDO)
+    AX: ${lastSample.imu0.ax}
+    AY: ${lastSample.imu0.ay}
+    AZ: ${lastSample.imu0.az}
+    GX: ${lastSample.imu0.gx}
+    GY: ${lastSample.imu0.gy}
+    GZ: ${lastSample.imu0.gz}
+
+    IMU 1 (ŁYDKA)
+    AX: ${lastSample.imu1.ax}
+    AY: ${lastSample.imu1.ay}
+    AZ: ${lastSample.imu1.az}
+    GX: ${lastSample.imu1.gx}
+    GY: ${lastSample.imu1.gy}
+    GZ: ${lastSample.imu1.gz}
+
+    TS: ${lastSample.ts}`;
 
     //każda próbka trafia do sessionSamples
     sessionSamples.push({
       session_id: sessionId,
       sample_idx: sessionSamples.length,
       dt: dt,
-      ax: lastSample.ax,
-      ay: lastSample.ay,
-      az: lastSample.az,
-      gx: lastSample.gx,
-      gy: lastSample.gy,
-      gz: lastSample.gz,
+
+      imu0_ax: lastSample.imu0.ax,
+      imu0_ay: lastSample.imu0.ay,
+      imu0_az: lastSample.imu0.az,
+      imu0_gx: lastSample.imu0.gx,
+      imu0_gy: lastSample.imu0.gy,
+      imu0_gz: lastSample.imu0.gz,
+
+      imu1_ax: lastSample.imu1.ax,
+      imu1_ay: lastSample.imu1.ay,
+      imu1_az: lastSample.imu1.az,
+      imu1_gx: lastSample.imu1.gx,
+      imu1_gy: lastSample.imu1.gy,
+      imu1_gz: lastSample.imu1.gz,
+
       ts: currentTs
     });
 
@@ -53,7 +76,9 @@ async function fetchIMU() {
     console.error("FETCH ERROR:", e);
   }
 
-  timer = setTimeout(fetchIMU, REFRESH_MS);
+  if (running) {
+    timer = setTimeout(fetchIMU, REFRESH_MS);
+  }
 }
 
 //start pomiaru i zerowanie sessionSamples
@@ -75,6 +100,12 @@ function start() {
 //koniec pomiaru. Funkcja running przyjmuje stop i nie działa już fetch
 function stop() {
   running = false;
+
+  if (timer !== null) {
+    clearTimeout(timer);
+    timer = null;
+  }
+
   if (timer) clearTimeout(timer);
   document.getElementById("out").textContent = "Zatrzymano";
 
@@ -92,17 +123,24 @@ function saveSample() {
 
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${sampleCount}</td>
-    <td>${lastSample.ax}</td>
-    <td>${lastSample.ay}</td>
-    <td>${lastSample.az}</td>
-    <td>${lastSample.gx}</td>
-    <td>${lastSample.gy}</td>
-    <td>${lastSample.gz}</td>
-    <td>${lastSample.ts}</td>
-    <td>
-      <button onclick="deleteRow(this)">Usuń</button>
-    </td>
+  <td>${sampleCount}</td>
+
+  <td>${lastSample.imu0.ax}</td>
+  <td>${lastSample.imu0.ay}</td>
+  <td>${lastSample.imu0.az}</td>
+  <td>${lastSample.imu0.gx}</td>
+  <td>${lastSample.imu0.gy}</td>
+  <td>${lastSample.imu0.gz}</td>
+
+  <td>${lastSample.imu1.ax}</td>
+  <td>${lastSample.imu1.ay}</td>
+  <td>${lastSample.imu1.az}</td>
+  <td>${lastSample.imu1.gx}</td>
+  <td>${lastSample.imu1.gy}</td>
+  <td>${lastSample.imu1.gz}</td>
+
+  <td>${lastSample.ts}</td>
+  <td><button onclick="deleteRow(this)">Usuń</button></td>
   `;
 
   document.getElementById("samples").appendChild(row);

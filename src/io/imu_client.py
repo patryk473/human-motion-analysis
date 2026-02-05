@@ -54,23 +54,29 @@ def save_csv():
             "session_id",
             "sample_idx",
             "dt",
-            "ax", "ay", "az",
-            "gx", "gy", "gz",
+
+            "imu0_ax", "imu0_ay", "imu0_az",
+            "imu0_gx", "imu0_gy", "imu0_gz",
+
+            "imu1_ax", "imu1_ay", "imu1_az",
+            "imu1_gx", "imu1_gy", "imu1_gz",
+
             "ts"
         ])
 
         # Iterujemy po próbkach
         for s in samples:
             writer.writerow([
-                s.get("session_id", "unknown"),
-                s.get("sample_idx", -1),
-                s.get("dt", 0.0),
-                s.get("ax"),
-                s.get("ay"),
-                s.get("az"),
-                s.get("gx"),
-                s.get("gy"),
-                s.get("gz"),
+                s.get("session_id"),
+                s.get("sample_idx"),
+                s.get("dt"),
+
+                s.get("imu0_ax"), s.get("imu0_ay"), s.get("imu0_az"),
+                s.get("imu0_gx"), s.get("imu0_gy"), s.get("imu0_gz"),
+
+                s.get("imu1_ax"), s.get("imu1_ay"), s.get("imu1_az"),
+                s.get("imu1_gx"), s.get("imu1_gy"), s.get("imu1_gz"),
+
                 s.get("ts")
             ])
 
