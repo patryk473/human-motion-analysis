@@ -3,8 +3,8 @@ import mediapipe as mp
 import numpy as np
 
 from src.config import create_pose_landmarker
-from src.pose import draw_points, draw_connections, knee_flexion_angle, torso_tilt_angle, hip_angle, SquatDetector, RealTimeFeedback
-from src.io import MovingAverage, draw_angles, draw_reports
+from src.pose import knee_flexion_angle, torso_tilt_angle, hip_angle, SquatDetector, RealTimeFeedback
+from src.io import MovingAverage, draw_angles, draw_reports, draw_points, draw_connections
 
 POSE_CONNECTIONS = {
     "left": [(23, 25), (25, 27), (11, 23)],
@@ -13,6 +13,8 @@ POSE_CONNECTIONS = {
 
 def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     
+    all_frames = []
+
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
 
@@ -43,9 +45,11 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     times = []
 
     frame_counter = 0
+    frame_index = 0
 
     while True:
         frame_counter += 1
+        frame_index += 1
         success, frame = cap.read() # Odczyt klatki z kamery
         if not success:
             break
@@ -92,13 +96,30 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
                 detector.state
             )
 
-            detector.update(angle_knee_smoothed, angle_trunk_smoothed, t)
-            if detector.current_squat:
-                current_id = detector.current_squat["squat_id"]
-            else:
-                current_id = None
+            detector.update(angle_knee_smoothed, angle_trunk_smoothed, t, frame_index)
+            # if detector.current_squat:
+            #     current_id = detector.current_squat["squat_id"]
+            # else:
+            #     current_id = None
 
-            frame_squat_ids.append(current_id)
+            # frame_squat_ids.append(current_id)
+
+            all_frames.append({
+                "frame": frame_index,
+                "time": t,
+
+                #kamera
+                "knee_angle": angle_knee_smoothed,
+                "hip_angle": angle_hip_smoothed,
+                "trunk_angle": angle_trunk_smoothed,
+
+                #squat info
+                "squat_id": detector.current_squat["squat_id"],
+                "state": detector.state.name,
+                "phase": detector.current_phase.name if detector.current_phase else None
+
+                #W przyszłości IMU
+            })
 
             if show_video:
                 draw_connections(frame, landmarks, POSE_CONNECTIONS[side], w, h)
@@ -120,4 +141,4 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
     detector.normalize_squat_time()
     squats = detector.get_squats()
     squat_times = detector.compute_times()
-    return times, angles, squats, squat_times
+    return times, angles, squats, squat_times, all_frames

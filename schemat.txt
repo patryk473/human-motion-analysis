@@ -1,42 +1,49 @@
 human-motion-analysis/
 │
 ├── firmware/                              # Kod na ESP32 (Arduino)
-│   └── esp32_imu_http/
-│       ├── esp32_imu_http.ino             # Główny plik Arduino (setup/loop, WiFi, HTTP)
-│       ├── imu_sensor.h                   # Obsługa IMU (LSM6DS3TR-C) – deklaracje
-│       ├── imu_sensor.cpp                 # Obsługa IMU – implementacja
-│       ├── api_handlers.h                 # Endpointy HTTP – deklaracje
-│       └── api_handlers.cpp               # Endpointy HTTP – implementacja
+│   └── esp32_imu_udp/
+│       ├── esp32_imu_udp.ino              # Główny plik Arduino (setup/loop, WiFi)
+│       ├── imu_sensor_udp.h               # Obsługa IMU (LSM6DS3TR-C) – deklaracje
+│       └── imu_sensor_udp.cpp             # Obsługa IMU – implementacja
 │
-├── live/                                  # Frontend do podglądu LIVE (HTML/JS)
-│   ├── imu.html                           # Live podgląd danych IMU
-│   ├── squat_live.html                    # live analiza przysiadu  <- na razie puste
+├── live/                                  # Analiza Live (jeszcze pusta)
+│   ├── imu.html                           
+│   ├── squat_live.html                    
 │   ├── js/
-│   │   └── imu_client.js                  # fetch(), WebSocket (w przyszłości)
 │   └── css/
-│       └── style.css                      # Style do HTML
+│       └── style.css                      
 │
 ├── data/                                  # Dane wejściowe i wyjściowe
+│   ├── config/
+│   │   └── imu_calibration.json           # Dane do kalibracji
 │   ├── raw/
 │   │   └── squat_02.mp4                   # Surowe nagranie wideo
 │   ├── processed/
 │   │   └── output.mp4                     # Wideo po analizie
-│   ├── result/
-│   │   └── imu_session.csv                #  Zapisane dane z IMU
+│   ├── result_imu/
+│   │   ├── raw/
+│   │   │   └── imu_session_live.csv
+│   │   ├── filtered/
+│   │   │   └── imu_session_live_filtered.csv
+│   │   └── features/
+│   │       └── imu_session_live_features.csv
 │   └── results/
 │       ├── dane.xlsx                      # Dane zbiorcze (Excel)
 │       ├── squat_02.csv                   # Dane ogólne przysiadu
 │       ├── squat_02_table.csv             # Dane tabelaryczne
 │       ├── squat_02_squats.csv            # Dane dla pojedynczych przysiadów
+│       ├── squat_02_frames.csv            # Dane dla faz (Skala 1-100% przysiadu)
 │       └── squat_report_02.txt            # Raport tekstowy z analizy
 │
 ├── models/                                # Modele ML / CV
 │   └── mediapipe/
-│       ├── pose_landmarker.task           # Model do całego ciała
-│       └── hand_landmarker.task           # Model do dłoni
+│       └── pose_landmarker.task           
 │
 ├── plots/                                 # Wygenerowane wykresy
-│   └── squat_02_plot.png                  # Wykres kątów / faz przysiadu
+│   ├── squat_02_plot.png                  # Wykres kątów / faz przysiadu
+│   ├── knee_angle.png                     # Wykres kąta kolana z imu
+│   ├── imu0_raw_vs_filtered.png                  
+│   └── imu1_raw_vs_filtered.png                  
 │
 ├── src/                                   # Logika Pythona
 │   ├── config/
@@ -44,15 +51,28 @@ human-motion-analysis/
 │   │   ├── mediapipe_config.py            # Konfiguracja MediaPipe
 │   │   └── paths.py                       # Ścieżki do modeli / danych
 │   │
-│   ├── io/
+│   ├── imu/
 │   │   ├── __init__.py
-│   │   ├── imu_client.py                  # Pobieranie danych IMU z ESP32 (HTTP)
-│   │   ├── draw_angles.py                 # Rysowanie kątów na wideo
-│   │   ├── draw_reports.py                # Rysowanie feedbacku na wideo
-│   │   ├── plotting.py                    # Generowanie wykresów
-│   │   ├── reports.py                     # Generowanie raportów tekstowych
-│   │   ├── csv_writer.py                  # Zapis danych do CSV
-│   │   └── filters.py                     # MovingAverage / filtrowanie sygnałów
+│   │   ├── calibrate_imu.py               
+│   │   ├── fix_csv_format.py              # niedługo do usunięcia             
+│   │   ├── imu_angles.py                                 
+│   │   ├── imu_calibration.py               
+│   │   ├── imu_diagnostics.py               
+│   │   ├── imu_features.py               
+│   │   ├── imu_filtering.py               
+│   │   ├── imu_udp_receiver.py               
+│   │   └── process_imu.py           
+│   │
+│   ├── io/
+│   │   ├── __init__.py               
+│   │   ├── draw_angles.py                 
+│   │   ├── draw_reports.py                
+│   │   ├── plotting.py                   
+│   │   ├── drawing.py                    
+│   │   ├── reports.py                    
+│   │   ├── csv_writer.py              
+│   │   ├── filters.py                    
+│   │   └── save_table_time.py             
 │   │
 │   ├── main/
 │   │   ├── __init__.py
@@ -62,15 +82,16 @@ human-motion-analysis/
 │   ├── pose/
 │   │   ├── __init__.py
 │   │   ├── angle_utils.py                 # Obliczanie kątów
-│   │   ├── drawing.py                     # Rysowanie szkieletu
 │   │   ├── feedback.py                    # Logika feedbacku
 │   │   ├── squat_detector.py              # Wykrywanie przysiadu
 │   │   └── squat_evaluator.py             # Ocena jakości przysiadu
 │
 ├── venv/                                  # Wirtualne środowisko Python
 │
-│
-├── main.py                                # Punkt startowy projektu (CLI)
+├── analiza_fs.py                          
+├── imu_logger.py                                                  
+├── imu_main.py                                
+├── main.py                                # Punkt startowy całego projektu (CLI)
 │
 ├── Opis_działań.txt                       # Historia tworzenia projektu
 ├── Poprawna_technika.txt                  # Opinie ChatGPT o poprawnej technice

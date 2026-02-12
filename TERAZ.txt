@@ -5,31 +5,53 @@ CHECKLIST
 2.  Ujednolicić detekcję przysiadu (kamera = źródło prawdy)                         <- architektura systemu
 3.  Dodać normalizację czasową każdego przysiadu (0–100%)                           <- analiza sygnałów / video
 
-(pt) Ustalić jasne kryteria jakości 
-4.  Zdefiniować jeden liczbowy „score jakości” przysiadu                            <- metryki jakości 
+(wykonano) (ale tylko w teorii bez kodu) Ustalić jasne kryteria jakości 
+4.  Zdefiniować jeden liczbowy „score jakości” przysiadu i wzorce ruchu             <- metryki jakości 
 
-(pon) Uporządkować dane i sposób ich zapisu
+(wykonano) Uporządkować dane i sposób ich zapisu
 5.  Uporządkować strukturę danych jednego przysiadu (kąty + fazy + czasy)           <- struktura danych
 
-(wt / śrd) Przygotować software do analiczy z czujników
+(wykonano) Przygotować software do analiczy z czujników
 6.  Dodać kalibrację IMU (offsety, orientacja osi)                                  <- czujniki
 7.  Dodać filtrację sygnałów IMU (low-pass / moving average)                        <- przetwarzanie sygnałów
 8.  Wyliczyć cechy z IMU (RMS, variance, piki gyro)                                 <- analiza sygnałów
 
-(czw) Zebranie nowych danych do analizy
+(wykonano) Zebranie nowych danych do analizy
 9.  Nagranie filmu do analizy z użyciem czujników                                   <- pomiar danych
 
-(pon) Połączenie informacji z kamery i czujników
+----
+
+(luty) Połączenie informacji z kamery i czujników
+a) ujednolicić czas
+b) detektor przysiadu z IMU
+c) dodać fazy do IMU
+d) ujednolicić nazwy kolumn
+e) synchronizacja IMU <-> Video (na przykład poprzez pierwszy start)
+f) Synchronizacja faz (dopasuj phase_percent VIDEO i phase_percent IMU)
+g) tworzysz jeden dataset
+time
+squat_id
+phase
+phase_percent
+knee_video
+knee_imu
+trunk_video
+tempo_video
+tempo_imu
+ROM_video
+ROM_imu
+
 10. Zsynchronizować czasowo IMU z wideo                                             <- integracja systemów
 11. Przypisać dane IMU do faz przysiadu                                             <- analiza danych z czujnika pod kątem danych z video
 
-(wt / śrd) Rozszerzenie oceny jakości o dane z IMU
+(marzec) Wstępna analiza jakości
 12. Dodać metryki jakości z IMU (stabilność, drgania)                               <- metryki jakości, ocena stabilności i jakości
 13. Połączyć ocenę jakości: kamera + IMU                                            <- połączenie danych
+13b. Tu będzie bardzo dużo kodu odnośnie oceny jakości (można to jakieś stopniowo dodawać w marcu tak szczerze)
 
 ^^^ stabilna wersja OFFLINE
 
-(marzec) Dodać tryb LIVE
+(marzec / kwiecień) Dodać tryb LIVE
 14. Uprościć i dopiero wtedy uruchomić tryb LIVE                                    <- tryb live
 15. Ponowne pomiary w trybie LIVE                                                   <- pomiar danych
 

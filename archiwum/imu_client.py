@@ -1,7 +1,7 @@
 # Jak to uruchomić?
 # w bashu
 """
-python src/io/imu_client.py
+python src/imu/imu_client.py
 
 cd live
 python -m http.server 8000
@@ -21,7 +21,7 @@ CORS(app)
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 # Katalog na wyniki
-OUT_DIR = BASE_DIR / "data" / "result"
+OUT_DIR = BASE_DIR / "data" / "result_imu" / "raw"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 @app.route("/save_csv", methods=["OPTIONS"])

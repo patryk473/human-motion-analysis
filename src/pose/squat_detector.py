@@ -24,7 +24,7 @@ class SquatDetector:
         self.next_squat_id = 1
         self.current_phase = None
 
-    def update(self, knee_angle, trunk_angle, time_s):
+    def update(self, knee_angle, trunk_angle, time_s, frame_index):
         ANGLE_START = 160
         ANGLE_BOTTOM = 90
         ANGLE_STAND = 165
@@ -33,9 +33,11 @@ class SquatDetector:
         if self.state != SquatState.STANDING and self.current_squat:
             phase = self._state_to_phase()
             self.current_squat["frames"].append({
+                "frame": frame_index,  
                 "time": time_s,
-                "knee": knee_angle,
-                "trunk": trunk_angle,
+                "knee_angle": knee_angle,
+                "trunk_angle": trunk_angle,
+                "hip_angle": None, 
                 "state": self.state.name,
                 "phase": phase.name if phase else None,
                 "squat_id": self.current_squat["squat_id"]
