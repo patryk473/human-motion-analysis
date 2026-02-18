@@ -114,7 +114,7 @@ def analyze_video(video_path, side="left", smooth_window=5, show_video=True):
                 "trunk_angle": angle_trunk_smoothed,
 
                 #squat info
-                "squat_id": detector.current_squat["squat_id"],
+                "squat_id": detector.current_squat.get("squat_id") if detector.current_squat else None,
                 "state": detector.state.name,
                 "phase": detector.current_phase.name if detector.current_phase else None
 

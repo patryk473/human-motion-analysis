@@ -1,0 +1,821 @@
+📐 1. Co fizycznie mierzy IMU?
+
+Każdy czujnik IMU mierzy:
+
+🟢 Akcelerometr
+
+Mierzy wektor przyspieszenia:
+
+𝑎
+⃗
+=
+[
+𝑎
+𝑥
+,
+𝑎
+𝑦
+,
+𝑎
+𝑧
+]
+a
+=[a
+x
+	​
+
+,a
+y
+	​
+
+,a
+z
+	​
+
+]
+
+W stanie statycznym (stanie nieruchomo):
+
+𝑎
+⃗
+≈
+𝑔
+⃗
+a
+≈
+g
+	​
+
+
+czyli mierzymy kierunek grawitacji.
+
+To oznacza, że możemy wyznaczyć orientację segmentu względem pionu.
+
+🔵 Żyroskop
+
+Mierzy prędkość kątową:
+
+𝜔
+⃗
+=
+[
+𝜔
+𝑥
+,
+𝜔
+𝑦
+,
+𝜔
+𝑧
+]
+ω
+=[ω
+x
+	​
+
+,ω
+y
+	​
+
+,ω
+z
+	​
+
+]
+
+Czyli:
+
+𝜔
+=
+𝑑
+𝜃
+𝑑
+𝑡
+ω=
+dt
+dθ
+	​
+
+
+Po całkowaniu:
+
+𝜃
+(
+𝑡
+)
+=
+∫
+𝜔
+(
+𝑡
+)
+𝑑
+𝑡
+θ(t)=∫ω(t)dt
+
+Problem: całkowanie powoduje dryf.
+
+🧠 2. Dlaczego używamy obu czujników?
+
+Akcelerometr:
+
+daje poprawny kąt w długim czasie
+
+ale jest wrażliwy na ruch i szum
+
+Żyroskop:
+
+bardzo dobrze mierzy szybkie zmiany
+
+ale dryfuje w czasie
+
+Dlatego stosowany jest:
+
+🔁 Complementary Filter
+
+Fizycznie to równanie:
+
+𝜃
+=
+𝛼
+(
+𝜃
+𝑔
+𝑦
+𝑟
+𝑜
+)
++
+(
+1
+−
+𝛼
+)
+(
+𝜃
+𝑎
+𝑐
+𝑐
+)
+θ=α(θ
+gyro
+	​
+
+)+(1−α)(θ
+acc
+	​
+
+)
+
+Czyli:
+
+szybkie zmiany → z żyroskopu
+
+stabilizacja długoterminowa → z grawitacji
+
+W praktyce:
+
+Integrujemy gyro → przewidywany kąt
+
+Liczymy błąd względem akcelerometru
+
+Korekta małą wagą
+
+To jest fizycznie filtr łączący dynamikę i statykę ruchu.
+
+📏 3. Jak liczony jest kąt segmentu?
+
+Ruch przysiadu analizowany jest w płaszczyźnie strzałkowej (2D).
+
+Zakładamy:
+
+przód–tył = oś X
+
+pion = oś Y
+
+Dla akcelerometru używany jest wzór:
+
+𝜃
+𝑎
+𝑐
+𝑐
+=
+arctan
+⁡
+2
+(
+𝑎
+𝑥
+,
+−
+𝑎
+𝑦
+)
+θ
+acc
+	​
+
+=arctan2(a
+x
+	​
+
+,−a
+y
+	​
+
+)
+
+Dlaczego tak?
+
+Bo:
+
+gdy segment jest pionowy → grawitacja działa w osi Y
+
+gdy segment pochyla się do przodu → rośnie składowa w osi X
+
+Fizycznie:
+
+tan
+⁡
+(
+𝜃
+)
+=
+𝑎
+𝑥
+𝑎
+𝑦
+tan(θ)=
+a
+y
+	​
+
+a
+x
+	​
+
+	​
+
+
+Funkcja arctan2 daje poprawny znak i zakres kąta.
+
+🦵 4. Jak liczony jest kąt kolana?
+
+Nie odejmujemy po prostu pitchy.
+
+Robimy to geometrycznie.
+
+Po kalibracji (stanie nieruchomo):
+
+𝜃
+𝑡
+ℎ
+𝑖
+𝑔
+ℎ
+𝑐
+𝑜
+𝑟
+𝑟
+=
+𝜃
+𝑡
+ℎ
+𝑖
+𝑔
+ℎ
+−
+𝜃
+𝑜
+𝑓
+𝑓
+𝑠
+𝑒
+𝑡
+θ
+thigh
+corr
+	​
+
+=θ
+thigh
+	​
+
+−θ
+offset
+	​
+
+𝜃
+𝑠
+ℎ
+𝑎
+𝑛
+𝑘
+𝑐
+𝑜
+𝑟
+𝑟
+=
+𝜃
+𝑠
+ℎ
+𝑎
+𝑛
+𝑘
+−
+𝜃
+𝑜
+𝑓
+𝑓
+𝑠
+𝑒
+𝑡
+θ
+shank
+corr
+	​
+
+=θ
+shank
+	​
+
+−θ
+offset
+	​
+
+
+Następnie tworzymy wektory jednostkowe 2D:
+
+𝑣
+⃗
+𝑡
+ℎ
+𝑖
+𝑔
+ℎ
+=
+[
+sin
+⁡
+(
+𝜃
+𝑡
+ℎ
+𝑖
+𝑔
+ℎ
+)
+
+
+cos
+⁡
+(
+𝜃
+𝑡
+ℎ
+𝑖
+𝑔
+ℎ
+)
+]
+v
+thigh
+	​
+
+=[
+sin(θ
+thigh
+	​
+
+)
+cos(θ
+thigh
+	​
+
+)
+	​
+
+]
+𝑣
+⃗
+𝑠
+ℎ
+𝑎
+𝑛
+𝑘
+=
+[
+sin
+⁡
+(
+𝜃
+𝑠
+ℎ
+𝑎
+𝑛
+𝑘
+)
+
+
+cos
+⁡
+(
+𝜃
+𝑠
+ℎ
+𝑎
+𝑛
+𝑘
+)
+]
+v
+shank
+	​
+
+=[
+sin(θ
+shank
+	​
+
+)
+cos(θ
+shank
+	​
+
+)
+	​
+
+]
+
+Iloczyn skalarny:
+
+𝑣
+⃗
+1
+⋅
+𝑣
+⃗
+2
+=
+∣
+𝑣
+⃗
+1
+∣
+∣
+𝑣
+⃗
+2
+∣
+cos
+⁡
+(
+𝜙
+)
+v
+1
+	​
+
+⋅
+v
+2
+	​
+
+=∣
+v
+1
+	​
+
+∣∣
+v
+2
+	​
+
+∣cos(ϕ)
+
+Ponieważ są jednostkowe:
+
+cos
+⁡
+(
+𝜙
+)
+=
+𝑣
+⃗
+1
+⋅
+𝑣
+⃗
+2
+cos(ϕ)=
+v
+1
+	​
+
+⋅
+v
+2
+	​
+
+
+Zatem:
+
+𝜙
+=
+arccos
+⁡
+(
+𝑣
+⃗
+1
+⋅
+𝑣
+⃗
+2
+)
+ϕ=arccos(
+v
+1
+	​
+
+⋅
+v
+2
+	​
+
+)
+
+I anatomiczna definicja kolana:
+
+𝑘
+𝑛
+𝑒
+𝑒
+=
+180
+∘
+−
+𝜙
+knee=180
+∘
+−ϕ
+
+Dlaczego 180° minus?
+
+Bo:
+
+gdy segmenty są w jednej linii → kolano = 180°
+
+gdy noga się zgina → kąt maleje
+
+To jest czysto geometryczna definicja kąta między dwoma wektorami.
+
+🎥 5. Jak liczony jest kąt z VIDEO?
+
+Video nie mierzy fizyki bezpośrednio.
+
+MediaPipe zwraca współrzędne punktów:
+
+(
+𝑥
+𝑖
+,
+𝑦
+𝑖
+)
+(x
+i
+	​
+
+,y
+i
+	​
+
+)
+
+Dla kolana:
+
+biodro
+
+kolano
+
+kostka
+
+Tworzymy dwa wektory:
+
+𝑢
+⃗
+=
+ℎ
+𝑖
+𝑝
+−
+𝑘
+𝑛
+𝑒
+𝑒
+u
+=hip−knee
+𝑣
+⃗
+=
+𝑎
+𝑛
+𝑘
+𝑙
+𝑒
+−
+𝑘
+𝑛
+𝑒
+𝑒
+v
+=ankle−knee
+
+I ponownie:
+
+𝜃
+=
+arccos
+⁡
+(
+𝑢
+⃗
+⋅
+𝑣
+⃗
+∣
+𝑢
+⃗
+∣
+∣
+𝑣
+⃗
+∣
+)
+θ=arccos(
+∣
+u
+∣∣
+v
+∣
+u
+⋅
+v
+	​
+
+)
+
+To jest czysta geometria euklidesowa w 2D.
+
+🔄 6. Synchronizacja fizyczna
+
+Po synchronizacji:
+
+VIDEO daje kąt geometryczny
+
+IMU daje kąt orientacyjny segmentów
+
+Porównujemy:
+
+𝑅
+𝑀
+𝑆
+𝐸
+=
+1
+𝑛
+∑
+(
+𝑘
+𝑛
+𝑒
+𝑒
+𝑣
+𝑖
+𝑑
+𝑒
+𝑜
+−
+𝑘
+𝑛
+𝑒
+𝑒
+𝑖
+𝑚
+𝑢
+)
+2
+RMSE=
+n
+1
+	​
+
+∑(knee
+video
+	​
+
+−knee
+imu
+	​
+
+)
+2
+	​
+
+
+Jeśli RMSE jest małe (~0.3°), oznacza to:
+
+poprawną kalibrację
+
+brak dużego dryfu
+
+spójność fizyczną modelu
+
+📊 7. Co oznaczają RMS i jerk fizycznie?
+RMS (Root Mean Square)
+𝑅
+𝑀
+𝑆
+=
+1
+𝑛
+∑
+𝑥
+𝑖
+2
+RMS=
+n
+1
+	​
+
+∑x
+i
+2
+	​
+
+	​
+
+
+Fizycznie:
+
+energia drgań
+
+poziom niestabilności
+
+mikrooscylacje segmentu
+
+Duże RMS → brak stabilności.
+
+Jerk
+𝑗
+𝑒
+𝑟
+𝑘
+=
+𝑑
+𝑎
+𝑑
+𝑡
+jerk=
+dt
+da
+	​
+
+
+To pochodna przyspieszenia.
+
+Fizycznie:
+
+nagłe zmiany siły
+
+„szarpnięcia”
+
+bounce w dole przysiadu
+
+🧩 8. Całość z perspektywy fizycznej
+
+System modeluje nogę jako dwa sztywne segmenty:
+
+udo
+
+podudzie
+
+Każdy segment ma:
+
+orientację w przestrzeni
+
+prędkość kątową
+
+przyspieszenie
+
+Kolano to:
+
+kąt między wektorami segmentów
+
+Video mierzy geometrię ruchu.
+IMU mierzy dynamikę ruchu.
+Synchronizacja pozwala połączyć:
+
+kinematykę (pozycję) + dynamikę (ruch).

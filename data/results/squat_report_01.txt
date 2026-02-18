@@ -1,0 +1,87 @@
+RAPORT ANALIZY PRZYSIADÓW
+========================
+
+Przysiad #1
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 90.0°
+max pochylenie tułowia: 45.8°
+tempo (dół/góra): 1.07
+
+
+Przysiad #2
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 78.4°
+max pochylenie tułowia: 50.7°
+tempo (dół/góra): 0.67
+
+
+Przysiad #3
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 77.6°
+max pochylenie tułowia: 63.0°
+tempo (dół/góra): 0.62
+
+
+Przysiad #4
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 69.4°
+max pochylenie tułowia: 52.3°
+tempo (dół/góra): 0.94
+
+
+Przysiad #5
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 88.4°
+max pochylenie tułowia: 49.8°
+tempo (dół/góra): 0.88
+
+
+Przysiad #6
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 79.3°
+max pochylenie tułowia: 50.7°
+tempo (dół/góra): 0.85
+
+
+Przysiad #7
+Status: NIEPOPRAWNY
+Komentarz: Utrzymuj bardziej wyprostowany tułów
+
+Błędy:
+ - Zbyt duże pochylenie tułowia
+
+min kąt kolana: 81.6°
+max pochylenie tułowia: 48.6°
+tempo (dół/góra): 0.93
+
+

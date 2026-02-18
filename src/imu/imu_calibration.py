@@ -41,7 +41,7 @@ def apply_calibration(df, calib):
             # 1. Odejmujemy bias
             # 2. Korygujemy znak osi
             df[f"{imu}_a{axis}"] = (
-                df[f"{imu}_a{axis}"] - acc_off[i]
+                df[f"{imu}_a{axis}"]
             ) * sign[i]
 
             # ŻYROSKOP

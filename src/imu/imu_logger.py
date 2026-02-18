@@ -10,8 +10,8 @@ from datetime import datetime
 # =========================
 HOST = "0.0.0.0"
 PORT = 5005
-TEST_DURATION = 10  # sekundy nagrywania
-OUTPUT_FILE = "data/result_imu/raw/imu_session_live.csv"
+TEST_DURATION = 20  # sekundy nagrywania
+OUTPUT_FILE = "data/result_imu/raw/imu_session_standing.csv"
 
 # =========================
 # SESSION ID (unikalny)

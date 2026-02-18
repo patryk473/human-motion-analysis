@@ -61,9 +61,11 @@ class SquatDetector:
 
                 # START FRAME – tylko raz
                 self.current_squat["frames"].append({
+                    "frame": frame_index,
                     "time": time_s,
-                    "knee": knee_angle,
-                    "trunk": trunk_angle,
+                    "knee_angle": knee_angle,
+                    "trunk_angle": trunk_angle,
+                    "hip_angle": None,
                     "state": self.state.name,
                     "phase": SquatPhase.START.name,
                     "squat_id": self.current_squat["squat_id"]

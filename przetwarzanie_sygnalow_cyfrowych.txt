@@ -1,0 +1,254 @@
+Super. Poniżej masz pełny schemat strzałkowy przetwarzania sygnału IMU – od RAW do gotowego knee_angle.
+Możesz to wkleić 1:1 do pliku .txt i użyć w nowej rozmowie.
+
+FULL IMU SIGNAL PIPELINE
+RAW → KNEE_ANGLE (krok po kroku)
+0️⃣ DANE WEJŚCIOWE
+
+RAW CSV:
+
+timestamp
+
+dt
+
+imu0_ax, imu0_ay, imu0_az
+
+imu0_gx, imu0_gy, imu0_gz
+
+imu1_ax, imu1_ay, imu1_az
+
+imu1_gx, imu1_gy, imu1_gz
+
+1️⃣ ESTYMACJA CZĘSTOTLIWOŚCI PRÓBKOWANIA
+
+RAW
+→ obliczenie mean(dt)
+→ fs = 1 / mean(dt)
+
+Cel:
+
+znajomość fs do filtrów i fuzji
+
+2️⃣ KALIBRACJA (STATYCZNA)
+2.1 Gyro calibration (OBOWIĄZKOWE)
+
+RAW gyro
+→ średnia z 10–20 s stania
+→ gyro_offset
+
+gyro_corrected = raw_gyro - gyro_offset
+
+Cel:
+
+usunięcie dryftu
+
+2.2 Acc bias (tylko bias, NIE usuwamy g)
+
+RAW acc
+→ ewentualna korekta małego biasu
+→ NIE odejmujemy pełnego wektora g
+
+acc_corrected = raw_acc * axis_sign
+
+Cel:
+
+zachować g jako referencję orientacji
+
+2.3 Korekcja znaku osi
+
+acc_corrected = acc * axis_sign
+gyro_corrected = gyro * axis_sign
+
+Cel:
+
+wyrównanie lokalnych osi czujników
+
+3️⃣ FILTROWANIE SYGNAŁU
+3.1 Median filter (opcjonalnie)
+
+acc_corrected
+→ median window = 3–5 próbek
+→ usunięcie spike’ów
+
+gyro_corrected
+→ median window = 3–5
+
+3.2 Low-pass filter (zalecany Butterworth)
+
+acc_median
+→ Butterworth 4th order
+→ cutoff 5–8 Hz
+→ filtfilt (zero phase)
+
+gyro_median
+→ Butterworth 10–15 Hz
+
+Cel:
+
+usunięcie szumu wysokoczęstotliwościowego
+
+brak opóźnienia fazowego
+
+4️⃣ NORMALIZACJA AKCELEROMETRU
+
+Dla każdej próbki:
+
+norm = sqrt(ax² + ay² + az²)
+
+ax_norm = ax / norm
+ay_norm = ay / norm
+az_norm = az / norm
+
+Cel:
+
+eliminacja wpływu przyspieszeń liniowych
+
+stabilizacja pitch
+
+5️⃣ ESTYMACJA ORIENTACJI SEGMENTU
+
+Dla każdego IMU osobno.
+
+5.1 Obliczenie pitch z akcelerometru
+
+pitch_acc = arctan2(acc_forward, acc_vertical)
+
+(Uwaga: osie zależne od montażu czujnika)
+
+5.2 Integracja gyro
+
+pitch_gyro[i] = pitch[i-1] + gyro_axis[i] * dt
+
+5.3 Complementary filter
+
+predicted = pitch_prev + gyro*dt
+error = pitch_acc - predicted
+error = normalizacja do [-180, 180]
+
+pitch_fused = predicted + (1 - alpha)*error
+
+alpha ≈ 0.95–0.98
+
+(Alternatywa profesjonalna)
+
+5.A Quaternion fusion (Madgwick / Mahony)
+
+RAW acc + gyro
+→ Madgwick filter
+→ quaternion
+→ konwersja do Euler
+→ pitch segmentu
+
+6️⃣ UNWRAP KĄTA
+
+pitch_unwrapped = np.unwrap(pitch_fused)
+
+Cel:
+
+eliminacja skoków ±180°
+
+7️⃣ KALIBRACJA REFERENCYJNA (STANIE)
+
+Pierwsze 3 sekundy:
+
+pitch_offset = mean(pitch_unwrapped[0:calib_samples])
+
+pitch_corrected = pitch_unwrapped - pitch_offset
+
+Cel:
+
+ustawienie 0° w pozycji stojącej
+
+8️⃣ OBLICZENIE WEKTORA SEGMENTU
+
+theta = radians(pitch_corrected)
+
+v_segment = [sin(theta), cos(theta)]
+
+9️⃣ OBLICZENIE KNEE ANGLE
+
+dot = v_thigh · v_shank
+dot = clip(-1, 1)
+
+knee_raw = arccos(dot)
+
+knee_angle = 180° - knee_raw
+
+Efekt:
+
+Stanie ≈ 180°
+
+Dół ≈ 90°
+
+🔟 POST-PROCESSING KNEE (opcjonalnie)
+
+Savitzky-Golay lub lekki low-pass
+→ wygładzenie końcowego kąta
+
+1️⃣1️⃣ FEATURE EXTRACTION
+
+Z knee_angle:
+
+min_knee
+
+max_knee
+
+ROM
+
+tempo descent
+
+tempo ascent
+
+symetria cykli
+
+detekcja przysiadów (state machine)
+
+CAŁY PIPELINE W SKRÓCIE STRZAŁKOWO
+
+RAW CSV
+↓
+Gyro offset removal
+↓
+Axis sign correction
+↓
+Median filter
+↓
+Butterworth low-pass
+↓
+Normalization of acc
+↓
+Pitch from acc
+↓
+Gyro integration
+↓
+Complementary filter
+↓
+Unwrap
+↓
+Standing calibration (zero reference)
+↓
+Vector representation
+↓
+Dot product
+↓
+arccos
+↓
+180 - angle
+↓
+Optional smoothing
+↓
+KNEE_ANGLE
+
+CO JEST KRYTYCZNE
+
+NIE usuwać g z akcelerometru
+
+Poprawna oś dla pitch
+
+Zero-phase filtr
+
+Unwrap przed obliczeniem wektorów
+
+To jest kompletny, inżynierski schemat przetwarzania sygnału IMU do kąta kolana.
+
+Jeśli wkleisz to w nowej rozmowie, będę wiedział dokładnie, na jakim etapie jesteśmy i co można dalej optymalizować.

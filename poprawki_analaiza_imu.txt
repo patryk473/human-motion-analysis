@@ -1,0 +1,272 @@
+Super 👍
+Poniżej masz czystą, uporządkowaną notatkę techniczną, którą możesz wkleić do .txt i potem wrzucić w nowej rozmowie. Jest napisana tak, żeby było jasne:
+
+jaki jest aktualny stan systemu
+
+co zostało naprawione
+
+jakie są dalsze możliwe ulepszenia
+
+co jest priorytetem
+
+IMU – STATUS SYSTEMU + PLAN POPRAWY JAKOŚCI
+1. Aktualny stan systemu
+✅ Co działa poprawnie:
+
+Grawitacja NIE jest już usuwana w kalibracji (acc_offset nie jest odejmowany)
+
+Complementary filter działa stabilnie
+
+Nie ma widocznego dryftu między przysiadami
+
+Segmenty mają realistyczne zakresy:
+
+Thigh ~ 60–70°
+
+Shank ~ 15–20°
+
+Knee angle:
+
+Stanie ~ 175–180°
+
+Dół przysiadu ~ 100–110°
+
+Kolejne przysiady są powtarzalne (brak akumulacji błędu)
+
+System jest kinematycznie stabilny.
+
+2. Główne problemy, które zostały naprawione
+❌ Problem 1: Usunięcie grawitacji w kalibracji
+
+Wcześniej:
+
+akcelerometr był zerowany w pozycji stojącej
+
+usuwany był cały wektor g
+
+pitch był liczony z sygnału ≈ 0
+
+segmenty miały absurdalne zakresy (150°)
+
+Rozwiązanie:
+
+przestaliśmy odejmować acc_offset
+
+zachowujemy wektor grawitacji
+
+Efekt:
+
+realistyczne zakresy segmentów
+
+stabilne kolano
+
+3. Co można jeszcze poprawić (przed synchronizacją z video)
+
+Poniżej lista ulepszeń jakości analizy IMU.
+
+I. FILTROWANIE
+1. Zamiana Moving Average na Butterworth
+
+Obecnie:
+
+moving average (wprowadza opóźnienie)
+
+spłaszcza sygnał
+
+Lepsze rozwiązanie:
+
+Butterworth 2–4 rzędu
+
+cutoff: 5–8 Hz
+
+zero-phase (filtfilt)
+
+Efekt:
+
+brak opóźnienia fazowego
+
+ostrzejsze minima i maksima
+
+bardziej realistyczna dynamika
+
+PRIORYTET: WYSOKI
+
+2. Median filter przed low-pass
+
+Zastosować:
+
+krótki median filter (okno 3–5)
+
+potem Butterworth
+
+Cel:
+
+usunięcie pojedynczych spike’ów widocznych w gyro
+
+II. COMPLEMENTARY FILTER
+3. Normalizacja akcelerometru
+
+Przed liczeniem pitch:
+
+norm = sqrt(ax² + ay² + az²)
+ax /= norm
+ay /= norm
+az /= norm
+
+Cel:
+
+eliminacja wpływu przyspieszeń liniowych
+
+stabilniejsza orientacja
+
+PRIORYTET: WYSOKI
+
+4. Adaptacyjna alpha
+
+Obecnie:
+alpha = 0.98 (stałe)
+
+Można:
+
+gdy |gyro| małe → ufać bardziej acc
+
+gdy |gyro| duże → ufać bardziej gyro
+
+Efekt:
+
+mniejszy dryft
+
+lepsze zachowanie przy szybkich ruchach
+
+PRIORYTET: ŚREDNI
+
+III. KALIBRACJA
+5. 6-pozycyjna kalibracja akcelerometru
+
+Obecnie:
+
+jedna pozycja (stanie)
+
+Lepsze:
+
+kalibracja w 6 orientacjach (±X, ±Y, ±Z)
+
+dopasowanie sfery
+
+estymacja scale error
+
+Efekt:
+
+poprawa dokładności kilku stopni
+
+PRIORYTET: ŚREDNI
+
+6. Lepsza kalibracja gyro
+
+10–20 sekund nieruchomo
+
+median zamiast mean
+
+usunięcie outlierów
+
+IV. ORIENTACJA SEGMENTU (DUŻY UPGRADE)
+7. Przejście z 1D pitch na quaternion (Madgwick / Mahony)
+
+Obecnie:
+
+liczymy tylko pitch (1D)
+
+zakładamy ruch w płaszczyźnie sagittalnej
+
+Lepsze:
+
+pełna fuzja 3D (quaternion)
+
+potem projekcja do płaszczyzny strzałkowej
+
+Efekt:
+
+odporność na błędny montaż czujnika
+
+stabilność przy ruchach poza jedną płaszczyzną
+
+brak problemów z osiami
+
+PRIORYTET: BARDZO WYSOKI (jeśli system ma być profesjonalny)
+
+V. BIOMECHANIKA
+8. Wspólny układ odniesienia segmentów
+
+W pozycji stojącej:
+
+wyznaczyć lokalny układ uda
+
+wyznaczyć lokalny układ łydki
+
+przetransformować oba do wspólnego układu
+
+Cel:
+
+usunięcie różnic montażowych
+
+9. Dodatkowe wygładzenie knee angle
+
+Opcjonalnie:
+
+Savitzky-Golay (małe okno)
+
+tylko na końcowym kącie kolana
+
+VI. ANALIZA JAKOŚCI
+10. Analiza powtarzalności przysiadów
+
+Dla serii:
+
+max knee
+
+min knee
+
+czas trwania
+
+tempo
+
+Jeśli rozrzut mały → system stabilny
+Jeśli rośnie w czasie → problem z dryftem
+
+11. Sprawdzenie stabilności dt
+
+sprawdzić jitter
+
+ewentualnie resampling do stałego fs
+
+4. Rekomendowany plan działania
+
+Jeśli wybieramy tylko kilka rzeczy:
+
+Butterworth zamiast moving average
+
+Normalizacja akcelerometru
+
+(Docelowo) Madgwick / quaternion orientation
+
+To da największy wzrost jakości.
+
+5. Aktualna ocena systemu
+
+System:
+
+✔ jest stabilny
+✔ nie dryfuje
+✔ ma realistyczne zakresy
+✔ poprawnie wykrywa przysiady
+✔ działa powtarzalnie
+
+Teraz jesteśmy w fazie „optymalizacja jakości”, a nie „naprawa błędu”.
+
+Jeśli w nowej rozmowie wkleję ten plik, będę wiedział:
+
+jaki jest stan systemu
+
+jakie błędy już zostały rozwiązane
+
+jakie są następne logiczne kroki.

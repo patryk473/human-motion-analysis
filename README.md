@@ -25,11 +25,3 @@ Dodajemy dwa czujniki na nodze połączone przewodami z ESP32
 
 Rozszerzenie jakości:
 -> Więcej danych odnośnie jakości
-
-
-1) Na podstawie ruchu, ESP32 przejmuje dane
--> Otrzymujemy feedback na żywo (buzzer, ledy, silniczek wybracyjny) + (przewody, rezystory)
-
-
-DALSZA PRZYSZŁOŚĆ
-3) analiza innych ruchów nie tylko przysiadu
