@@ -96,13 +96,72 @@ firmware/
  └ esp32_imu_udp – ESP32 code for IMU streaming
 
 ---
-
 # How to Run
 
-Video analysis:
+The project contains three main pipelines.
 
+---
 
-[......]
+## 1. Video Analysis (no hardware required)
+
+python main.py
+
+Performs squat analysis using MediaPipe pose estimation.
+
+Outputs:
+- joint angles
+- squat phases
+- movement quality metrics
+
+---
+
+## 2. IMU Analysis
+
+python imu_main.py
+
+Processes IMU sensor data.
+
+Pipeline:
+- calibration
+- filtering
+- orientation estimation
+- knee angle computation
+- squat segmentation
+
+Requires IMU CSV dataset.
+
+---
+
+## 3. Video + IMU Dataset
+
+python integration.py
+
+Creates synchronized dataset combining video and IMU signals.
+
+## Quick Demo (No hardware required)
+
+You can run a simplified demo using the example dataset:
+
+python example_main.py
+
+This script loads example data and generates basic plots of the knee angle over time.
+
+Note:
+The demo version does **not include full video processing or visualization overlays** (e.g. pose landmarks drawn on video frames).  
+Those features require running the full video pipeline with an input video file.
+
+### Demo limitations
+
+The demo mode is intended only to illustrate the data processing pipeline.
+
+It does not include:
+
+• pose landmarks drawn on video frames  
+• real-time video visualization  
+• IMU sensor streaming  
+• full dataset synchronization
+
+These features are available when running the full pipelines.
 
 # Example Results
 
