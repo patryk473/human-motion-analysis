@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-
+from src.io import plot_video_imu_analysis
 
 def compute_imu_dynamics(df):
     """

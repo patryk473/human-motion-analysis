@@ -9,3 +9,4 @@ from .draw_reports import draw_reports
 from .drawing import draw_connections
 from .drawing import draw_points
 from .plot_guality import plot_quality_analysis
+from .integration_plots import plot_video_imu_analysis

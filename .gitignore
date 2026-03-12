@@ -5,10 +5,25 @@ data/result_all/
 
 *.mp4
 *.csv
+!example_data/
+!example_data/**/*.csv
 *.xlsx
 
 data/processed/
 live/
+
+# plots not included in repo
+plots/imu_compare_scaled.png
+plots/imu_acc_magnitude.png
+plots/imu_gyro_magnitude.png
+plots/imu_segment_angles.png
+plots/imu_knee_angle.png
+plots/trunk_vs_thigh.png
+plots/mean_cycle_video_*.png
+plots/video_cycles_overlay*.png
+plots/knee_angle_cycles.png
+plots/knee_angle_std.png
+plots/mean_squat_curve.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
