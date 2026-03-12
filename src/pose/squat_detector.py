@@ -15,6 +15,8 @@ class SquatPhase(Enum):
     END = 4
 
 class SquatDetector:
+    ASCENT_DELTA = 1.0
+    BOTTOM_ENTER = 95
     def __init__(self, fps):
         self.state = SquatState.STANDING
         self.prev_angle = None
@@ -44,7 +46,7 @@ class SquatDetector:
             })
 
         if self.state == SquatState.STANDING:
-            if knee_angle < ANGLE_START:
+            if knee_angle < ANGLE_START and self.prev_angle and knee_angle < self.prev_angle:
                 self.current_phase = SquatPhase.START
                 self.state = SquatState.DESCENDING
 
@@ -74,7 +76,7 @@ class SquatDetector:
         elif self.state == SquatState.DESCENDING:
             self.current_squat["min_knee"] = min(self.current_squat["min_knee"], knee_angle)
             self.current_squat["max_trunk"] = max(self.current_squat["max_trunk"], trunk_angle)
-            if knee_angle < ANGLE_BOTTOM:
+            if knee_angle < self.BOTTOM_ENTER:
                 self.state = SquatState.BOTTOM
                 self.current_phase = SquatPhase.BOTTOM
                 self.current_squat["bottom_time"] = time_s
@@ -85,7 +87,7 @@ class SquatDetector:
         elif self.state == SquatState.BOTTOM:
             self.current_squat["min_knee"] = min(self.current_squat["min_knee"], knee_angle)
             self.current_squat["max_trunk"] = max(self.current_squat["max_trunk"], trunk_angle)
-            if self.prev_angle and knee_angle > self.prev_angle:
+            if self.prev_angle and (knee_angle - self.prev_angle) > self.ASCENT_DELTA:
                 self.state = SquatState.ASCENDING
                 self.current_phase = SquatPhase.ASCENT
 

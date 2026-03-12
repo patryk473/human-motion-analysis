@@ -10,3 +10,7 @@ from .imu_angles import compute_knee_angle
 from .imu_offline_analysis import process_imu_offline, synchronize_imu_video
 from .imu_angles import debug_axes
 from .debug_sync_plot import plot_sync_analysis, plot_video_vs_imu_no_shift
+from .plot_knee_signal import plot_knee_signal
+from .imu_squat_segmentation import segment_imu_squats
+from .imu_squat_features import compute_imu_squat_features  
+from .plot_imu_analysis import plot_for_imu_analysis

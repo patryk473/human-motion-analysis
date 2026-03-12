@@ -30,7 +30,7 @@ BARDZO KRÓTKI SPIS TREŚCI – CO JEST DO ZROBIENIA 📌
 
 PEŁNE ROZPISANIE ETAPÓW
 
-ETAP 1 – DOMKNIĘCIE ANALIZY VIDEO (MUST) 🎥
+✅ETAP 1 – DOMKNIĘCIE ANALIZY VIDEO (MUST) 🎥
 1.1 Jawna definicja faz przysiadu
 Upewnić się, że każda klatka w przysiadzie ma: squat_id, phase, phase_percent. Fazy muszą być jednoznacznie zdefiniowane na podstawie znaku pochodnej kąta kolana oraz progów głębokości. To będzie referencja dla IMU.
 1.2 Normalizacja czasowa 0–100%
@@ -38,19 +38,48 @@ Dla każdego przysiadu: przemapować czas do zakresu 0–100% oraz wykonać inte
 1.3 Jeden liczbowy score jakości (0–100)
 Zdefiniować matematycznie score jako sumę ważoną: ROM + stabilność + symetria tempa + kontrola tułowia. Jawna formuła matematyczna, gotowa do opisu w pracy.
 
-ETAP 2 – IMU (BEZ JESZCZE ŁĄCZENIA) 📡
+✅ETAP 2 – IMU (BEZ JESZCZE ŁĄCZENIA) 📡
 2.1 Kalibracja – zakończona (offsety, axis_sign).
 2.2 Filtracja – low-pass + complementary filter; należy jasno określić częstotliwości odcięcia i potwierdzić brak przesunięcia fazowego.
 2.3 Feature extraction – do rozbudowy
 Obecnie: knee_angle_imu, thigh_pitch, shank_pitch.
 Do dodania: RMS (per faza), jerk, peak gyro, variance, omega RMS.
 
-ETAP 3 – INTEGRACJA VIDEO ↔ IMU (KLUCZ) 🔗
+✅ETAP 3 – INTEGRACJA VIDEO ↔ IMU (KLUCZ) 🔗
 3.1 Synchronizacja czasowa – działa (offset po pierwszym minimum).
 3.2 Synchronizacja faz – brak
 Należy przypisać dane IMU do faz: DESCENT, BOTTOM, ASCENT na podstawie zsynchronizowanego czasu.
 3.3 Jeden wspólny dataset
 Docelowa struktura kolumn: time, squat_id, phase, phase_percent, knee_video, knee_imu, trunk_video, omega_imu, jerk_imu, descent_time, ascent_time, ROM_video, ROM_imu.
+3️⃣ Finalna struktura datasetu
+
+Polecam taką:
+
+time
+squat_id
+phase
+phase_percent
+
+knee_video
+knee_imu
+knee_error
+
+trunk_video
+thigh_pitch
+shank_pitch
+
+omega_imu
+acc_imu
+jerk_imu
+
+ROM_video
+ROM_imu
+
+descent_time_video
+ascent_time_video
+descent_time_imu
+ascent_time_imu
+
 
 ETAP 4 – ANALIZA JAKOŚCI (WARSTWA BIOMECHANICZNA) 🧠
 4.1 Metryki per squat

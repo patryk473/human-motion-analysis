@@ -6,6 +6,9 @@ from src.imu import synchronize_imu_video
 from src.imu import compute_knee_angle
 from src.imu import debug_axes
 from src.imu import plot_sync_analysis, plot_video_vs_imu_no_shift
+from src.imu import segment_imu_squats
+from src.imu import compute_imu_squat_features
+from src.imu import plot_for_imu_analysis
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -84,4 +87,33 @@ plot_video_vs_imu_no_shift(
     video_csv="data/results/squat_analysis_1_frames.csv",  
     imu_csv="data/result_imu/features/imu_session_live_1_features_time.csv",
     output_path="plots/video_vs_imu_no_shift.png"
+)
+
+# Segmentacja przysiadów z IMU
+
+df = pd.read_csv("data/result_imu/features/imu_session_live_1_features_time.csv")
+
+df = segment_imu_squats(
+    df,
+    min_depth=40
+)
+
+df.to_csv(
+    "data/result_imu/features/imu_session_live_1_squats.csv",
+    index=False
+)
+
+df = pd.read_csv(
+    "data/result_imu/features/imu_session_live_1_squats.csv"
+)
+
+features = compute_imu_squat_features(df)
+
+features.to_csv(
+    "data/result_imu/features/imu_session_live_1_squat_features.csv",
+    index=False
+)
+
+plot_for_imu_analysis(
+    "data/result_imu/features/imu_session_live_1_squats.csv"
 )
