@@ -3,35 +3,58 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-# --------------------------------
-# Load example dataset
-# --------------------------------
+# --------------------------------------------------
+# LOAD EXAMPLE DATA
+# --------------------------------------------------
 
-data_path = "example_data/video_frames_sample.csv"
+video_path = "example_data/video_frames_sample.csv"
+imu_path = "example_data/imu_sample.csv"
 
-df = pd.read_csv(data_path)
+print("Loading example datasets...")
 
-print("Loaded example dataset:", data_path)
-print(df.head())
+video_df = pd.read_csv(video_path)
+imu_df = pd.read_csv(imu_path)
 
 
-# --------------------------------
-# Plot knee angle
-# --------------------------------
+# --------------------------------------------------
+# VIDEO DEMO
+# --------------------------------------------------
+
+print("Generating video knee angle plot...")
 
 plt.figure(figsize=(10,5))
 
-plt.plot(df["time"], df["knee_angle"], label="Knee angle")
+plt.plot(video_df["time"], video_df["knee_angle"], label="Video knee angle")
+
 plt.xlabel("Time (s)")
 plt.ylabel("Angle (deg)")
-plt.title("Example Knee Angle (Video)")
+plt.title("Knee Angle from Video Pose Estimation")
 plt.legend()
 plt.grid(True)
 
 Path("plots").mkdir(exist_ok=True)
 
-plt.savefig("plots/example_knee_angle.png", dpi=300)
+plt.savefig("plots/example_video_knee_angle.png", dpi=300)
 
-plt.show()
 
-print("Example plot saved to plots/example_knee_angle.png")
+# --------------------------------------------------
+# IMU DEMO
+# --------------------------------------------------
+
+print("Generating IMU knee angle plot...")
+
+plt.figure(figsize=(10,5))
+
+plt.plot(imu_df["time_s"], imu_df["knee_angle_imu"], label="IMU knee angle")
+
+plt.xlabel("Time (s)")
+plt.ylabel("Angle (deg)")
+plt.title("Knee Angle from IMU Sensors")
+plt.legend()
+plt.grid(True)
+
+plt.savefig("plots/example_imu_knee_angle.png", dpi=300)
+
+
+print("Demo completed.")
+print("Plots saved to 'plots/' directory.")
