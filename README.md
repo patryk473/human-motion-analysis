@@ -99,10 +99,30 @@ firmware/
 
 # How to Run
 
-Video analysis:
+## 1. Clone repository
 
+git clone https://github.com/YOUR_USERNAME/human-motion-analysis.git
+cd human-motion-analysis
 
-[......]
+## 2. Install dependencies
+
+pip install -r requirements.txt
+
+## 3. Run video analysis
+
+python main.py
+
+This script performs squat analysis from a video file using MediaPipe pose estimation.
+
+## 4. Run IMU analysis
+
+python imu_main.py
+
+This script processes IMU sensor data, estimates segment orientation and computes knee joint angle.
+
+## 5. Firmware (ESP32)
+
+The folder `firmware/esp32_imu_udp` contains code for streaming IMU data via UDP from ESP32 to a PC.
 
 # Example Results
 
