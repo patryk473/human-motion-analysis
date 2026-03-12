@@ -1,3 +1,15 @@
+data/raw/
+data/result_imu/
+data/results/
+data/result_all/
+
+*.mp4
+*.csv
+*.xlsx
+
+data/processed/
+live/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
