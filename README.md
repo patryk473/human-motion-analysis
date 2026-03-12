@@ -37,10 +37,17 @@ Biomechanical metrics and movement quality analysis
 
 # Hardware
 
-ESP32  
-2× IMU sensors (thigh + shank)
+The system uses a microcontroller and wearable IMU sensors to collect motion data.
 
-IMU data is streamed via UDP to a PC for processing.
+Main components:
+
+• ESP32 development board (ESP-WROOM-32 module)  
+https://botland.com.pl/esp32/8893-esp32-wifi-bt-42-platforma-z-modulem-esp-wroom-32-zgodny-z-esp32-devkit-5904422337438.html
+
+• 2× LSM6DS3TR-C 6-DOF IMU sensor  
+(3-axis accelerometer + 3-axis gyroscope)  
+https://botland.com.pl/akcelerometry/21828-lsm6ds3tr-c-6-dof-imu-3-osiowy-akcelerometr-i-zyroskop-adafruit-4503.html
+
 
 # Hardware Setup
 
@@ -48,7 +55,7 @@ Example hardware setup used during development.
 
 Two IMU sensors are attached to the thigh and shank and stream data to a PC using ESP32 via UDP.
 
-![Hardware Setup](docs/images/hardware_setup.jpg)
+<img src="docs/images/hardware_setup.jpg" width="500">
 
 ---
 
