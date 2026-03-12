@@ -42,7 +42,7 @@ ESP32
 
 IMU data is streamed via UDP to a PC for processing.
 
-<!-- # Hardware Setup
+# Hardware Setup
 
 Example hardware setup used during development.
 
@@ -50,7 +50,7 @@ Two IMU sensors are attached to the thigh and shank and stream data to a PC usin
 
 ![Hardware Setup](docs/images/hardware_setup.jpg)
 
---- -->
+---
 
 # IMU Processing Pipeline
 
