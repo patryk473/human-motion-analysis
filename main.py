@@ -3,6 +3,7 @@ import pandas as pd
 from src.main import analyze_video
 from src.io import save_angles_csv, plot_three_angles, save_squat_times_table, save_squat_report, save_squat_frames_csv, plot_quality_analysis
 from src.pose import SquatEvaluator, PhaseClassifier, TimeNormalizer, SquatQualityScorer
+
 times, angles, squats, squat_times, all_frames = analyze_video("data/raw/squat_analysis_imu_1.mp4")
 
 plot_three_angles(times, angles,

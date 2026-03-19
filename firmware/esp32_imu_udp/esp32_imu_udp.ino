@@ -6,7 +6,7 @@ const char* ssid = "SPEED-NET-312019";
 const char* password = "BB312019LAC6B1";
 
 // 🔥 IP KOMPUTERA (Python)
-IPAddress remoteIP(192,168,233,195);   // ← ZMIENISZ NA SWOJE
+IPAddress remoteIP(192,168,233,195); 
 const unsigned int remotePort = 5005;
 
 WiFiUDP udp;

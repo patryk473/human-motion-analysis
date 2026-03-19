@@ -246,6 +246,7 @@ Concepts
 ## Author
 
 Patryk Ciechanowski
-Automation and Robotics student
+Automation and Robotics student AGH University of Krakow
 
 GitHub: https://github.com/patryk473
+email: cpatryk2@wp.pl
